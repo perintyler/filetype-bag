@@ -1,0 +1,55 @@
+version: v0.1
+name: filetype
+description: >-
+  Convert files between formats and identify what a file actually is. Images
+  (including HEIC), audio/video, documents and PDFs — routed to whichever
+  installed engine can do the job, with every conversion verified against the
+  bytes it produced.
+
+tools:
+  entry: tools.ts
+
+# Namespace matches the bag name, so the auto-trait fallback would be correct
+# anyway — but declared metadata is deterministic where introspection of a
+# stale build is not (auto-traits.ts, ownNamespaces). src/tools.test.ts asserts
+# this list and the exports agree, so a renamed tool cannot silently drift into
+# an access level nobody intended.
+tool-metadata:
+  - { toolName: identify, namespace: filetype, access: read }
+  - { toolName: convert, namespace: filetype, access: write }
+  - { toolName: inspect_image, namespace: filetype, access: read }
+  - { toolName: transcode, namespace: filetype, access: write }
+  - { toolName: inspect_media, namespace: filetype, access: read }
+  - { toolName: convert_document, namespace: filetype, access: write }
+  - { toolName: pdf_to_images, namespace: filetype, access: write }
+  - { toolName: pdf_text, namespace: filetype, access: read }
+  - { toolName: status, namespace: filetype, access: read }
+
+# Every engine is optional at load time and checked at call time, so a machine
+# missing LibreOffice still gets working image conversion. `status` reports the
+# whole roster; a tool that needs a missing binary names it and the install
+# command rather than failing obscurely.
+#
+# Two engines are listed for images on purpose. ImageMagick cannot read
+# HEIC/AVIF/JXL on this machine (`magick -list format` has no entry for them)
+# while `sips --formats` lists all three, and HEIC is the default iPhone photo
+# format. src/images.ts routes on the format pair rather than falling back on
+# error, so "unsupported codec" and "corrupt file" stay distinguishable.
+dependencies:
+  - name: magick
+    install: brew install imagemagick
+    reason: image conversion for everything except heic/avif/jxl
+  - name: sips
+    reason: reads heic/avif/jxl, which ImageMagick cannot (ships with macOS)
+  - name: ffmpeg
+    install: brew install ffmpeg
+    reason: audio and video transcoding
+  - name: pandoc
+    install: brew install pandoc
+    reason: document conversion between docx/odt/html/rst/epub/markdown
+  - name: soffice
+    install: brew install --cask libreoffice
+    reason: converts office formats to PDF
+  - name: pdftoppm
+    install: brew install poppler
+    reason: rasterizes PDF pages, and pdftotext extracts their text layer

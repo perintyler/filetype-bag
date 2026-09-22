@@ -27,7 +27,7 @@ barry pack filetype
 ```
 
 **The bag must live at `~/repos/bags/filetype`, with `~/repos/barry` as a
-sibling.** `package.json` links `@barry-rocks/tools` by relative path; anywhere
+sibling.** `package.json` links `@barry-rocks/sdk-bags` by relative path; anywhere
 else it fails to typecheck while the tests still pass, so confirm with
 `npx tsc --noEmit` rather than `pnpm test`.
 

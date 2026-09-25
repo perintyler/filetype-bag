@@ -1,4 +1,4 @@
-import { defineTool } from "@barry-rocks/sdk-bags";
+import { defineTool } from "@barry-rocks/sdk/bags";
 import { z } from "zod";
 import { stat } from "node:fs/promises";
 import { extname, join, dirname, basename } from "node:path";

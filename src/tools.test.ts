@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AnyToolDefinition } from "@barry-rocks/sdk-bags";
+import type { AnyToolDefinition } from "@barry-rocks/sdk/bags";
 import * as tools from "./tools.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
